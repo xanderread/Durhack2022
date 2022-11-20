@@ -15,13 +15,7 @@ from nrclex import NRCLex
 nlp = spacy.load("en_core_web_sm")
 
 
-text = "Nearly ten years had passed since the Dursleys had woken up to find their nephew on the front step, but Privet Drive had hardly changed at all. The sun rose on the same tidy front gardens and lit up the brass number four on the Dursleys' front door; it crept into their living room, which was almost exactly the same as it had been on the night when Mr. Dursley had seen that fateful news report about the owls"
-
-soundDictionary = {
-
-    "rain" : "rain"
-
-}
+#text = "Nearly ten years had passed since the Dursleys had woken up to find their nephew on the front step, but Privet Drive had hardly changed at all. The sun rose on the same tidy front gardens and lit up the brass number four on the Dursleys' front door; it crept into their living room, which was almost exactly the same as it had been on the night when Mr. Dursley had seen that fateful news report about the owls"
 
 # this function finds the keywords
 def extractKeywords(text):
@@ -40,7 +34,8 @@ def extractKeywords(text):
                 flag=False
         if(flag and (phrase not in correctPhrases)):
             correctPhrases.append(phrase)
-    return keyword_extracted[:10]
+    sorted_list = list(sorted(correctPhrases, key = len))
+    return sorted_list[:7]
 
 # this function generates a theme
 def getSentiment(text):

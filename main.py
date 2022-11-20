@@ -7,7 +7,7 @@ text = "he house stood on a slight rise just on the edge of the village. It stoo
 def main(inputText, style):
     #params = audio,style
     prompt,soundLink = queryGenerator(inputText) #Awaiting next push
-    prompt += ", "+style
+    prompt = "in the theme of "+style+", "+prompt
     #sounds can be returned as an array of URLs for sounds
     imageURL=makeImage(prompt)
     print(imageURL)

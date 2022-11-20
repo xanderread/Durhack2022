@@ -52,7 +52,7 @@
     <script>
       //var imagelink = "https://cdn.britannica.com/78/43678-050-F4DC8D93/Starry-Night-canvas-Vincent-van-Gogh-New-1889.jpg"
       //document.getElementById('image1').setAttribute('src',imagelink);
-  setInterval(sendData, 15000);
+  setInterval(sendData, 1000);
   if ("webkitSpeechRecognition" in window) {
   // Initialize webkitSpeechRecognition
   let speechRecognition = new webkitSpeechRecognition();
@@ -100,12 +100,12 @@
   document.querySelector("#start").onclick = () => {
     // Start the Speech Recognition
     speechRecognition.start();
+    gallery = document.getElementById('gallery');
+    gallery.innerHTML = "";
   };
   // Set the onClick property of the stop button
   document.querySelector("#stop").onclick = () => {
     // Stop the Speech Recognition
-    gallery = document.getElementById('gallery');
-    gallery.innerHTML = "";
     speechRecognition.stop();
   };
 } else {
@@ -120,18 +120,18 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 var json = JSON.parse(xhr.responseText);
-                
-                imagelink = json.imagelink
-                gallery = document.getElementById('gallery');
-                gallery.innerHTML = `<div class="zoom  col-sm-6 col-md-4 col-lg-3  item" width="700" height="700"><img class="img-fluid " src="${imagelink}"></a></div>` + gallery.innerHTML               
-                //play sound
-                sound = json.soundLink
-                  
-                if (sound == "birds.mp3" || sound == "rain.mp3"){
-                  
-                  str = "static/"+sound
-                  var audio = new Audio(str);
-                  audio.play();
+                if(json.imagelink != undefined){
+                  imagelink = json.imagelink
+                  gallery = document.getElementById('gallery');
+                  gallery.innerHTML = `<div class="col-sm-6 col-md-4 col-lg-3  item" width="600" height="600"><img class="img-fluid " src="${imagelink}"></a></div>` + gallery.innerHTML               
+                  //play sound
+                  sound = json.soundLink
+                    
+                  if (sound == "birds.mp3" || sound == "rain.mp3"){
+                    str = "static/"+sound
+                    var audio = new Audio(str);
+                    audio.play();
+                  }
                 }
                 
               
