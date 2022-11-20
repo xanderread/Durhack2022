@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Inkheart- interactive story telling experience</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  </head>
+  <body>
+    <header>
+      <h1 class >Inkheart</h1>
+      <h6>Interactive Storytelling Experience</h6>
+    </header>
+    <select name="Genre" id="Genre">
+      <option value="Fantasy">Fantasy</option>
+      <option value="Science Fiction">Science Fiction</option>
+      <option value="Dystopian">Dystopian</option>
+      <option value="Action & Adventure">Action & Adventure</option>
+      <option value="Mystery">Mystery</option>
+      <option value="Horror">Horror</option>
+      <option value="Thriller ">Thriller </option>
+      <option value="Historical Fiction">Historical Fiction</option>
+      <option value="Romance">Romance</option>
+      <option value="Graphic Novel">Graphic Novel</option>
+      <option value="Children’s">Children’s</option>
+  </select>
+
+  <body class="container pt-5 bg">
+    <div class="mt-4 text-center align-center">
+      <button class="btn " id="start">Start</button>
+      <button class="btn " id="stop">Stop</button>
+      <p id="status" class="lead mt-3 " style="display: none">Listening ...</p>
+    </div>
+    <!-- <ul>
+      <li><img id="image1" width="540" height="540"></li>    
+    </ul> -->
+    <div class="row photos  " id="gallery">
+      <!-- <div class="col-sm-6 col-md-4 col-lg-3 item" width="540" height="540"><a href="https://i.imgur.com/zmzERpe.jpg" data-lightbox="photos"><img class="img-fluid" src="https://i.imgur.com/zmzERpe.jpg"></a></div> -->
+  </div>
+  </body>
+
+ 
+   
+
+</html>
+    
+    <script>
+      //var imagelink = "https://cdn.britannica.com/78/43678-050-F4DC8D93/Starry-Night-canvas-Vincent-van-Gogh-New-1889.jpg"
+      //document.getElementById('image1').setAttribute('src',imagelink);
+  setInterval(sendData, 15000);
+  if ("webkitSpeechRecognition" in window) {
+  // Initialize webkitSpeechRecognition
+  let speechRecognition = new webkitSpeechRecognition();
+
+  // String for the Final Transcript
+  var final_transcript = "";
+  var interim_transcript = "";
+
+  // Set the properties for the Speech Recognition object
+  speechRecognition.continuous = true;
+  speechRecognition.interimResults = true;
+
+  // Callback Function for the onStart Event
+  speechRecognition.onstart = () => {
+    // Show the Status Element
+    document.querySelector("#status").style.display = "block";
+  };
+  speechRecognition.onerror = () => {
+    // Hide the Status Element
+    document.querySelector("#status").style.display = "none";
+  };
+  speechRecognition.onend = () => {
+    // Hide the Status Element
+    document.querySelector("#status").style.display = "none";
+  };
+
+  speechRecognition.onresult = (event) => {
+    // Create the interim transcript string locally because we don't want it to persist like final transcript
+
+    // Loop through the results from the speech recognition object.
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      // If the result item is Final, add it to Final Transcript, Else add it to Interim transcript
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+        //interim_transcript = ""
+        //console.log(final_transcript)
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+
+  };
+
+  // Set the onClick property of the start button
+  document.querySelector("#start").onclick = () => {
+    // Start the Speech Recognition
+    speechRecognition.start();
+  };
+  // Set the onClick property of the stop button
+  document.querySelector("#stop").onclick = () => {
+    // Stop the Speech Recognition
+    gallery = document.getElementById('gallery');
+    gallery.innerHTML = "";
+    speechRecognition.stop();
+  };
+} else {
+  console.log("Speech Recognition Not Available");
+}
+      function sendData(){
+        if(final_transcript!=""){
+          var xhr = new XMLHttpRequest();
+        var url = "http://127.0.0.1:5000/imagegen";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText);
+                
+                imagelink = json.imagelink
+                gallery = document.getElementById('gallery');
+                gallery.innerHTML = `<div class="zoom  col-sm-6 col-md-4 col-lg-3  item" width="700" height="700"><img class="img-fluid " src="${imagelink}"></a></div>` + gallery.innerHTML               
+                //play sound
+                sound = json.soundLink
+                  
+                if (sound == "birds.mp3" || sound == "rain.mp3"){
+                  
+                  str = "static/"+sound
+                  var audio = new Audio(str);
+                  audio.play();
+                }
+                
+              
+            }
+        };
+        
+        //TODO: put the story text here
+        var select = document.getElementById('Genre');
+        var value = select.options[select.selectedIndex].value;
+       // if(final_transcript != ""){
+        //  var data = JSON.stringify({"text": final_transcript, "style": value});
+
+        //}else{
+          //var data = JSON.stringify({"text": interim_transcript, "style": value});
+
+       // }
+        var data = JSON.stringify({"text": final_transcript, "style": value});
+        
+        xhr.send(data);
+        final_transcript = "";
+        }
+      }
+
+
+    </script>
